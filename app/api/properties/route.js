@@ -1,7 +1,7 @@
 import connectDB from "@/config/database";
 import Property from "@/models/Property";
 import { getSessionUser } from "@/utils/getSessionUser";
-import cloundinary from "@/config/cloudinary";
+import cloudinary  from "@/config/cloudinary";
 
 // GET /api/properties
 export const GET = async (request) => {
@@ -32,6 +32,9 @@ export const POST = async (request) => {
     const images = formData
       .getAll("images")
       .filter((image) => image.name !== "");
+    console.log("!!!!!!!!!!!!!!!!!!!!!!11");
+    console.log(images);
+    console.log("!!!!!!!!!!!!!!!!!!!!!!11");
 
     const propertyData = {
       type: formData.get("type"),
@@ -60,15 +63,17 @@ export const POST = async (request) => {
       owner: userId,
     };
 
-    const imageUploadPromises = [];
+    const imageUrls = [];
 
-    for (const image of images) {
-      const imageBuffer = await image.arrayBuffer();
-      const imageArray = Array.form(new Uint8Array(imageBuffer));
+    for (const imageFile of images) {
+      const imageBuffer = await imageFile.arrayBuffer();
+      const imageArray = Array.from(new Uint8Array(imageBuffer));
       const imageData = Buffer.from(imageArray);
 
+      // Convert the image data to base64
       const imageBase64 = imageData.toString("base64");
 
+      // Make request to upload to Cloudinary
       const result = await cloudinary.uploader.upload(
         `data:image/png;base64,${imageBase64}`,
         {
@@ -76,11 +81,9 @@ export const POST = async (request) => {
         }
       );
 
-      imageUploadPromises.push(result.secure_url);
-
-      const uploadedImages = await Promise.all(imageUploadPromises);
-      propertyData.images = uploadedImages;
+      imageUrls.push(result.secure_url);
     }
+    propertyData.images = imageUrls;
 
     const newProperty = new Property(propertyData);
     await newProperty.save();
@@ -91,6 +94,7 @@ export const POST = async (request) => {
 
     // return new Response(JSON.stringify(properties), { status: 200 });
   } catch (error) {
+    console.error(error);
     return new Response("something went wrong", { status: 500 });
   }
 };
