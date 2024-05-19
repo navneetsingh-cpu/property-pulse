@@ -1,7 +1,7 @@
 import connectDB from "@/config/database";
 import Property from "@/models/Property";
 import { getSessionUser } from "@/utils/getSessionUser";
-import cloudinary  from "@/config/cloudinary";
+import cloudinary from "@/config/cloudinary";
 
 // GET /api/properties
 export const GET = async (request) => {
@@ -32,9 +32,6 @@ export const POST = async (request) => {
     const images = formData
       .getAll("images")
       .filter((image) => image.name !== "");
-    console.log("!!!!!!!!!!!!!!!!!!!!!!11");
-    console.log(images);
-    console.log("!!!!!!!!!!!!!!!!!!!!!!11");
 
     const propertyData = {
       type: formData.get("type"),
@@ -51,9 +48,9 @@ export const POST = async (request) => {
       square_feet: formData.get("square_feet"),
       amenities,
       rates: {
-        weekly: formData.get("location.weekly"),
-        monthly: formData.get("location.monthly"),
-        nightly: formData.get("location.nightly"),
+        weekly: formData.get('rates.weekly'),
+        monthly: formData.get('rates.monthly'),
+        nightly: formData.get('rates.nightly'),
       },
       seller_info: {
         name: formData.get("seller_info.name"),
