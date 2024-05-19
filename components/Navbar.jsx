@@ -10,6 +10,7 @@ import { signIn, signOut, useSession, getProviders } from "next-auth/react";
 
 const Navbar = () => {
   const { data: session } = useSession();
+  const profileImage = session?.user?.image;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [providers, setProviders] = useState(false);
@@ -164,7 +165,9 @@ const Navbar = () => {
                     <span className="sr-only">Open user menu</span>
                     <Image
                       className="h-8 w-8 rounded-full"
-                      src={profileDefault}
+                      src={profileImage || profileDefault}
+                      width={40}
+                      height={40}
                       alt=""
                     />
                   </button>
@@ -182,6 +185,9 @@ const Navbar = () => {
                   >
                     <Link
                       href="/profile"
+                      onClick={() => {
+                        setIsProfileMenuOpen(false);
+                      }}
                       className="block px-4 py-2 text-sm text-gray-700"
                       role="menuitem"
                       tabIndex="-1"
@@ -191,6 +197,9 @@ const Navbar = () => {
                     </Link>
                     <Link
                       href="/properties/saved"
+                      onClick={() => {
+                        setIsProfileMenuOpen(false);
+                      }}
                       className="block px-4 py-2 text-sm text-gray-700"
                       role="menuitem"
                       tabIndex="-1"
@@ -201,6 +210,10 @@ const Navbar = () => {
                     <button
                       className="block px-4 py-2 text-sm text-gray-700"
                       role="menuitem"
+                      onClick={() => {
+                        setIsProfileMenuOpen(false);
+                        signOut();
+                      }}
                       tabIndex="-1"
                       id="user-menu-item-2"
                     >
